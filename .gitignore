@@ -1,0 +1,9 @@
+# Python files
+*.pyc
+*.egg-info
+
+# Wast
+.wast/*
+
+# tests
+.coverage
