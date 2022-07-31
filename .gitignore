@@ -4,6 +4,9 @@
 
 # Wast
 .wast/*
+_reports/
 
 # tests
 .coverage
+.pytest_cache
+.mypy_cache
