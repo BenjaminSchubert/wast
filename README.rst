@@ -1,3 +1,8 @@
+.. image:: https://github.com/BenjaminSchubert/wast/actions/workflows/ci.yml/badge.svg
+   :target: https://github.com/BenjaminSchubert/wast/actions/workflows/ci.yml
+   :alt: checks badge
+
+
 Workflow AsSiTant
 =================
 
