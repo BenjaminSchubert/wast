@@ -2,6 +2,9 @@
    :target: https://github.com/BenjaminSchubert/wast/actions/workflows/ci.yml
    :alt: checks badge
 
+.. image:: https://codecov.io/gh/BenjaminSchubert/wast/branch/main/graph/badge.svg?token=OK872YRU0H
+   :target: https://codecov.io/gh/BenjaminSchubert/wast
+
 
 Workflow AsSiTant
 =================

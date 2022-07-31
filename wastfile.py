@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import wast
 import wast.predefined
 
@@ -6,6 +8,7 @@ TEST_REQUIREMENTS = "-rrequirements/requirements-test.txt"
 OLDEST_SUPPORTED_PYTHON = "3.9"
 SUPPORTED_PYTHONS = ["3.9", "3.10"]
 PYTHON_FILES = ["src/", "tests/", "setup.py", "wastfile.py"]
+REPORTS_PATH = Path(__file__).parent.joinpath("_reports")
 
 ##
 # Formatting
@@ -60,4 +63,17 @@ wast.predefined.pytest(
     dependencies=[TEST_REQUIREMENTS],
     requires=["package"],
     parametrize=wast.parametrize("python", SUPPORTED_PYTHONS),
+)
+
+##
+# Reports
+##
+wast.predefined.coverage(
+    reports=[
+        ["html", f"--directory={REPORTS_PATH / 'coverage/html'}"],
+        ["xml", f"-o{REPORTS_PATH / 'coverage/coverage.xml'}"],
+        ["report", "--show-missing"],
+    ],
+    requires=["pytest"],
+    dependencies=["coverage[toml]"],
 )
