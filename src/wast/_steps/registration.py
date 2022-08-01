@@ -4,7 +4,7 @@ from .._exceptions import BaseWastException
 from .._inspect import get_location
 from .._pipeline import get_pipeline
 from .handlers import StepGroupHandler, StepHandler
-from .parametrize import extract_parameters, parametrize
+from .parametrize import ParameterConflictException, extract_parameters, parametrize
 from .steps import Step, StepHandlerProtocol
 
 
@@ -32,6 +32,8 @@ def register_step(
             )
 
     parameters = extract_parameters(func)
+    session_args = pipeline.config._get_args_for(name)
+
     all_run_by_default = True
     all_created = []
 
@@ -58,6 +60,15 @@ def register_step(
         current_run_by_default = get_from_if_not_none(
             "run_by_default", run_by_default, args
         )
+
+        if step_name != name:
+            parametrized_session_args = pipeline.config._get_args_for(step_name)
+            if parametrized_session_args is None:
+                parametrized_session_args = session_args
+
+        if "session_args" in args:
+            raise BaseWastException("'session_args' is a reserved parameter and cannot be passed by `parametrize` or `set_default`")
+        args["session_args"] = session_args
 
         all_created.append(step_name)
         all_run_by_default = all_run_by_default and current_run_by_default

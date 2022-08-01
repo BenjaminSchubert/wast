@@ -4,7 +4,7 @@ import os
 import random
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List, Dict, Set
 
 from ._exceptions import BaseWastException
 
@@ -13,6 +13,8 @@ LOGGER = logging.getLogger(__name__)
 
 # This is a config class, it's easier to have everything there...
 # pylint: disable=too-many-instance-attributes
+#
+# TODO: split this in user-accessible config and private one
 class Config:
     def __init__(
         self,
@@ -25,6 +27,9 @@ class Config:
         skip_setup: bool,
         skip_run: bool,
         fail_fast: bool,
+        selected_sessions_args: List[str],
+        session_args: Dict[str, List[str]],
+
     ) -> None:
         self.user_config = user_config
         self.cache_path = Path(cache_path).resolve()
@@ -82,6 +87,10 @@ class Config:
             self.environ["PY_COLORS"] = "0"
             self.environ["NO_COLOR"] = "0"
 
+        self._selected_sessions_args = selected_sessions_args
+        self._session_args = session_args
+        self._consumed_session_args: Set[str] = set()
+
     def _get_color_setting(self, colors: Optional[bool]) -> bool:
         if colors is not None:
             return colors
@@ -106,3 +115,13 @@ class Config:
             return True
 
         return sys.stdin.isatty()
+
+    def _get_args_for(self, session: str) -> Optional[List[str]]:
+        self._consumed_session_args.add(session)
+        return self._session_args.get(session)
+
+    def _report_unused_arguments(self) -> None:
+        all_session_args = set(self._session_args)
+        unused_session_args = all_session_args - self._consumed_session_args
+        if unused_session_args:
+            LOGGER.warning("Unused arguments passed for sessions: %s", ", ".join(sorted(unused_session_args)))

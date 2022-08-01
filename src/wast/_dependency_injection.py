@@ -39,11 +39,9 @@ def call_with_parameters(
             if actual_func != func:
                 func_name = f"{func.__name__}.{func_name}"
 
-            file = inspect.getsourcefile(actual_func)
-            line = inspect.getsourcelines(actual_func)[-1]
             raise BaseWastException(
                 f"Parameter '{name}' was not provided for function"
-                f" '{func_name}' defined in {file}:{line}"
+                f" '{func_name}' defined in {get_location(actual_func)}"
             ) from exc
 
     return func(**kwargs)

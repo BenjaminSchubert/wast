@@ -1,11 +1,13 @@
 import importlib.util
 import logging
+import shlex
 import shutil
 from argparse import (
     ArgumentParser,
     BooleanOptionalAction,
     Namespace,
     _AppendAction,
+    Action
 )
 from contextlib import suppress
 from contextvars import Context
@@ -18,6 +20,18 @@ from ._exceptions import BaseWastException
 from ._logging import setup_logging
 
 LOGGER = logging.getLogger(__name__)
+
+
+class PerSessionAction(Action):
+    def __call__(self, parser: ArgumentParser, namespace: Namespace, values: Any, option_string: Optional[str] = None) -> None:
+        step, args = values.split("=")
+        current_values = getattr(namespace, self.dest, None)
+        if current_values is None:
+            current_values = {}
+        if step not in current_values:
+            current_values[step] = []
+        current_values[step].extend(shlex.split(args))
+        setattr(namespace, self.dest, current_values)
 
 
 class _SplitAppendAction(_AppendAction):
@@ -138,6 +152,10 @@ def _parse_args(args: Optional[List[str]] = None) -> Namespace:
         help="Don't report a missing interpreter as a failure, and skip the step instead",
     )
 
+    # Collect other arguments to pass to the various steps if provided
+    parser.add_argument("--args", dest="session_args", action=PerSessionAction)
+    parser.add_argument("selected_sessions_flags", nargs="*")
+
     return parser.parse_args(args)
 
 
@@ -151,6 +169,8 @@ def _load_user_config(
     assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+
+    pipeline.config._report_unused_arguments()
 
     return pipeline
 
@@ -186,6 +206,7 @@ def _execute_pipeline(
 
 def main(sys_args: Optional[List[str]] = None) -> None:
     args = _parse_args(sys_args)
+
     verbosity = args.verbose - args.quiet
     config = Config(
         args.config,
@@ -197,6 +218,8 @@ def main(sys_args: Optional[List[str]] = None) -> None:
         args.no_setup,
         args.setup_only,
         args.fail_fast,
+        args.selected_sessions_flags,
+        args.session_args,
     )
     setup_logging(logging.INFO - 10 * verbosity, config.colors)
 
