@@ -1,3 +1,7 @@
+.. image:: https://readthedocs.org/projects/wast/badge/?version=latest
+   :target: https://wast.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
 .. image:: https://github.com/BenjaminSchubert/wast/actions/workflows/ci.yml/badge.svg
    :target: https://github.com/BenjaminSchubert/wast/actions/workflows/ci.yml
    :alt: checks badge
