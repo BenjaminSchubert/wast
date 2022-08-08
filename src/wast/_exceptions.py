@@ -2,6 +2,18 @@ from typing import List
 
 
 class BaseWastException(Exception):
+    """
+    Base exception used for exceptions thrown by Wast.
+
+    :param message: A user-facing message explaining what happened.
+    :param exit_code:
+
+        the exit code to use for the wast process if the exception is not caught.
+
+        - 1 means a pipeline run failed
+        - 2 means a user or configuration error
+    """
+
     def __init__(self, message: str, exit_code: int = 2) -> None:
         super().__init__(message)
         self._message = message
