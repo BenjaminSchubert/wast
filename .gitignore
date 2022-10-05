@@ -4,7 +4,7 @@
 
 # Wast
 .wast/*
-_reports/
+_artifacts/
 
 # tests
 .coverage
