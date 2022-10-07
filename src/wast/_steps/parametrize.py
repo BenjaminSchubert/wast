@@ -16,8 +16,8 @@ from .._exceptions import BaseWastException
 
 T = TypeVar("T", bound=Callable[..., Any])
 
-_DEFAULTS = "_wast_defaults"
-_PARAMETERS = "_wast_parameters"
+_DEFAULTS = "__wast_defaults__"
+_PARAMETERS = "__wast_parameters__"
 
 
 class ParameterConflictException(BaseWastException):
@@ -273,6 +273,41 @@ def set_defaults(values: Dict[str, Any]) -> Callable[[T], T]:
         return func
 
     return _apply
+
+
+def build_parameters(**kwargs: Any) -> Callable[[T], T]:
+    """
+    Generate a :py:func:`parametrize` call based on the provided parameters.
+
+    This is a shortcut to build a single :py:func:`parametrize` call, for all
+    non-:python:`None` values that are passed in.
+
+    It will only pass the arguments as a single entry, so this will only ever
+    generate a single entry.
+
+    This is basically a shortcut for:
+
+    .. code-block::
+
+        for key, value in parameters.items():
+            if value is not None:
+                func = parametrize(key, [value])(func)
+
+    :param kwargs: Any key/value pair to pass as a parametrize argument
+    :return: A function to apply the parameters on the given step.
+    """
+    names = []
+    values = []
+
+    for key, value in kwargs.items():
+        if value is not None:
+            names.append(key)
+            values.append(value)
+
+    if names:
+        return parametrize(names, [values])
+
+    return lambda t: t
 
 
 def extract_parameters(
