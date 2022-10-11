@@ -129,7 +129,7 @@ def parametrize(
 
     .. note::
 
-        Parameters, once set for a specific argument cannot be overriden. If
+        Parameters, once set for a specific argument cannot be overridden. If
         you want to provide default values, see :py:func:`set_defaults`.
 
     :param arg_names: The name of the argument to parametrize. Or a list of
