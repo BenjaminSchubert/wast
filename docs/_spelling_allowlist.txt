@@ -6,6 +6,7 @@ conda
 cpus
 cpython
 doctests
+enqueuing
 isort
 linkchecks
 nox
@@ -18,5 +19,5 @@ pytest
 reusability
 sdist
 tox
+unimport
 venvs
-enqueuing

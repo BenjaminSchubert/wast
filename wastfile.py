@@ -19,16 +19,23 @@ ARTIFACTS_PATH = ROOT_PATH / "_artifacts"
 ##
 # Formatting
 ##
+wast.predefined.unimport()
 wast.predefined.isort(files=PYTHON_FILES)
 wast.predefined.docformatter(files=PYTHON_FILES)
 wast.predefined.black()
 
 # With auto fix
+wast.predefined.unimport(
+    name="unimport:fix",
+    additional_arguments=["--diff", "--remove", "--check", "--gitignore"],
+    run_by_default=False,
+)
 wast.predefined.isort(
     name="isort:fix",
     additional_arguments=["--atomic"],
     run_by_default=False,
     files=PYTHON_FILES,
+    requires=["unimport:fix"],
 )
 wast.predefined.docformatter(
     name="docformatter:fix",
