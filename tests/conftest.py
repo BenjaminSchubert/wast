@@ -16,6 +16,8 @@ from wast._subproc import set_subprocess_default_pipes
 
 from ._utils import isolated_context, isolated_logging
 
+pytest.register_assert_rewrite("tests.predefined.mixins")
+
 
 @dataclass(frozen=True)
 class Result:
@@ -42,8 +44,12 @@ def cli():
         # See https://github.com/python/typeshed/issues/8513#issue-1333671093
         exit_code: Union[str, int, None] = 0
 
+        args.append("--verbose")
+        if "--no-colors" not in args and "--colors" not in args:
+            args.append("--color")
+
         try:
-            main(args + ["--verbose", "--color"])
+            main(args)
         except SystemExit as exc:
             if exc.code != 0:
                 exit_code = exc.code
