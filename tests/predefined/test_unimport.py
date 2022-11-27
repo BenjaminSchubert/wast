@@ -1,10 +1,11 @@
 def test_does_not_modify_files_by_default(cli, tmp_path):
     # This code is misformatted to trigger an error
     wastfile_content = """\
+from wast import register_managed_step
 from wast.predefined import unimport
 import os
 
-unimport()
+register_managed_step(unimport())
 """
     wastfile_path = tmp_path.joinpath("wastfile.py")
     wastfile_path.write_text(wastfile_content)
@@ -18,10 +19,13 @@ unimport()
 def test_can_apply_fixes(cli, tmp_path):
     # This code is misformatted to trigger an error
     wastfile_content = """\
+from wast import register_managed_step
 from wast.predefined import unimport
 import os
 
-unimport(additional_arguments=["--diff", "--remove", "--check"])
+register_managed_step(
+    unimport(additional_arguments=["--diff", "--remove", "--check"])
+)
 """
     wastfile_path = tmp_path.joinpath("wastfile.py")
     wastfile_path.write_text(wastfile_content)
